@@ -1,0 +1,5 @@
+{
+  "name": "Dan Travels",
+  "description": "Premium taxi and travel services for a comfortable and reliable journey.",
+  "requestFramePermissions": ["geolocation"]
+}
