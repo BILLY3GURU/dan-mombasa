@@ -19,6 +19,8 @@ export default function Navbar() {
     { name: 'Home', href: '#' },
     { name: 'Services', href: '#services' },
     { name: 'Our Fleet', href: '#fleet' },
+    { name: 'Safari', href: '#safari' },
+    { name: 'Pricing', href: '#pricing' },
     { name: 'Booking', href: '#booking' },
     { name: 'Contact', href: '#contact' },
   ];
