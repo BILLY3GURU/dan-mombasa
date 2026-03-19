@@ -2,16 +2,79 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import { Calendar, MapPin, Users, Clock, Send } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, Send, AlertCircle } from 'lucide-react';
+import { cn } from '../lib/utils';
+
+interface FormData {
+  pickup: string;
+  dropoff: string;
+  passengers: string;
+  phone: string;
+}
+
+interface FormErrors {
+  pickup?: string;
+  dropoff?: string;
+  phone?: string;
+}
 
 export default function BookingForm() {
   const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [formData, setFormData] = useState<FormData>({
+    pickup: '',
+    dropoff: '',
+    passengers: '1 Passenger',
+    phone: '',
+  });
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const validate = (): boolean => {
+    const newErrors: FormErrors = {};
+    
+    if (!formData.pickup.trim()) {
+      newErrors.pickup = 'Pickup location is required';
+    }
+    
+    if (!formData.dropoff.trim()) {
+      newErrors.dropoff = 'Drop-off location is required';
+    }
+    
+    const phoneRegex = /^\+?[\d\s-]{10,}$/;
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Contact number is required';
+    } else if (!phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Please enter a valid phone number';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 5000);
+    if (validate()) {
+      setIsSubmitted(true);
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({
+          pickup: '',
+          dropoff: '',
+          passengers: '1 Passenger',
+          phone: '',
+        });
+        setStartDate(new Date());
+      }, 5000);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
   return (
@@ -90,7 +153,7 @@ export default function BookingForm() {
                 </button>
               </motion.div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
@@ -99,10 +162,23 @@ export default function BookingForm() {
                     </label>
                     <input 
                       type="text" 
+                      name="pickup"
+                      value={formData.pickup}
+                      onChange={handleChange}
                       placeholder="Enter pickup address"
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
-                      required
+                      className={cn(
+                        "w-full px-5 py-4 bg-slate-50 border rounded-2xl focus:outline-none focus:ring-2 transition-all",
+                        errors.pickup 
+                          ? "border-rose-500 focus:ring-rose-200" 
+                          : "border-slate-200 focus:ring-yellow-400"
+                      )}
                     />
+                    {errors.pickup && (
+                      <p className="text-rose-500 text-xs font-medium flex items-center gap-1 mt-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {errors.pickup}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
@@ -111,10 +187,23 @@ export default function BookingForm() {
                     </label>
                     <input 
                       type="text" 
+                      name="dropoff"
+                      value={formData.dropoff}
+                      onChange={handleChange}
                       placeholder="Enter destination"
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
-                      required
+                      className={cn(
+                        "w-full px-5 py-4 bg-slate-50 border rounded-2xl focus:outline-none focus:ring-2 transition-all",
+                        errors.dropoff 
+                          ? "border-rose-500 focus:ring-rose-200" 
+                          : "border-slate-200 focus:ring-yellow-400"
+                      )}
                     />
+                    {errors.dropoff && (
+                      <p className="text-rose-500 text-xs font-medium flex items-center gap-1 mt-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {errors.dropoff}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -138,7 +227,12 @@ export default function BookingForm() {
                       <Users className="w-4 h-4 text-yellow-500" />
                       Passengers
                     </label>
-                    <select className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all appearance-none">
+                    <select 
+                      name="passengers"
+                      value={formData.passengers}
+                      onChange={handleChange}
+                      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all appearance-none"
+                    >
                       <option>1 Passenger</option>
                       <option>2 Passengers</option>
                       <option>3 Passengers</option>
@@ -151,10 +245,23 @@ export default function BookingForm() {
                   <label className="text-sm font-bold text-slate-700">Contact Number</label>
                   <input 
                     type="tel" 
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
                     placeholder="+1 (555) 000-0000"
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
-                    required
+                    className={cn(
+                      "w-full px-5 py-4 bg-slate-50 border rounded-2xl focus:outline-none focus:ring-2 transition-all",
+                      errors.phone 
+                        ? "border-rose-500 focus:ring-rose-200" 
+                        : "border-slate-200 focus:ring-yellow-400"
+                    )}
                   />
+                  {errors.phone && (
+                    <p className="text-rose-500 text-xs font-medium flex items-center gap-1 mt-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {errors.phone}
+                    </p>
+                  )}
                 </div>
 
                 <button 
@@ -175,3 +282,4 @@ export default function BookingForm() {
     </section>
   );
 }
+

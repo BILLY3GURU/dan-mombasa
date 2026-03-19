@@ -38,11 +38,23 @@ export default function Hero() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 px-8 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all transform hover:scale-105 shadow-xl shadow-yellow-400/20">
+              <button 
+                onClick={() => {
+                  const elem = document.getElementById('booking');
+                  elem?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 px-8 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all transform hover:scale-105 shadow-xl shadow-yellow-400/20"
+              >
                 Book Your Ride Now
                 <ArrowRight className="w-5 h-5" />
               </button>
-              <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all">
+              <button 
+                onClick={() => {
+                  const elem = document.getElementById('fleet');
+                  elem?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all"
+              >
                 View Our Fleet
               </button>
             </div>

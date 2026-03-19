@@ -128,7 +128,13 @@ export default function Fleet() {
                   ))}
                 </div>
 
-                <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-yellow-500 hover:text-slate-900 transition-all shadow-lg">
+                <button 
+                  onClick={() => {
+                    const elem = document.getElementById('booking');
+                    elem?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-yellow-500 hover:text-slate-900 transition-all shadow-lg"
+                >
                   Book This Car
                 </button>
               </div>
