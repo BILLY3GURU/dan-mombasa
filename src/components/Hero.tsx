@@ -91,6 +91,8 @@ export default function Hero() {
             className="w-full h-auto object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.5)]"
             referrerPolicy="no-referrer"
           />
+          {/* License Plate Blur Overlay */}
+          <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 w-32 h-8 bg-white/30 backdrop-blur-md rounded border border-white/20 shadow-sm z-10" />
         </motion.div>
       </div>
     </section>

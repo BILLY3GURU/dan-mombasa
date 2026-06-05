@@ -99,6 +99,9 @@ export default function Fleet({ onSelectCar }: FleetProps) {
                     className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
                     referrerPolicy="no-referrer"
                   />
+                  {/* License Plate Blur Overlay */}
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-24 h-6 bg-white/30 backdrop-blur-md rounded border border-white/20 shadow-sm z-10" />
+                  
                   <div className="absolute top-4 left-4">
                     <span className="bg-yellow-400 text-slate-900 px-4 py-1 rounded-full text-sm font-bold shadow-lg">
                       {car.type}

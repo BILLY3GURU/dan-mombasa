@@ -3,15 +3,18 @@ import { motion } from 'motion/react';
 import { Plane, MapPin, ArrowRight } from 'lucide-react';
 
 const airportRates = [
-  { destination: 'Malindi', price: '15,000' },
-  { destination: 'Kilifi Town', price: '7,000' },
-  { destination: 'Mtwapa', price: '3,500' },
-  { destination: 'Shanzu', price: '3,000' },
-  { destination: 'Nyali', price: '2,100' },
-  { destination: 'Mombasa Town', price: '1,500' },
-  { destination: 'Diani', price: '7,000' },
-  { destination: 'Mariakani', price: '3,500' },
-  { destination: 'Kaloleni', price: '3,500' },
+  { destination: 'Malindi', price: '20,000' },
+  { destination: 'Kilifi', price: '10,000' },
+  { destination: 'Mtwapa', price: '4,500' },
+  { destination: 'Shanzu', price: '3,500' },
+  { destination: 'Bamburi', price: '3,000' },
+  { destination: 'Nyali', price: '2,700' },
+  { destination: 'Mombasa Town', price: '2,000' },
+  { destination: 'Likoni', price: '4,000' },
+  { destination: 'Diani', price: '10,000' },
+  { destination: 'Mariakani', price: '4,000' },
+  { destination: 'Voi', price: '40,000' },
+  { destination: 'Nairobi', price: '70,000' },
 ];
 
 export default function Pricing() {

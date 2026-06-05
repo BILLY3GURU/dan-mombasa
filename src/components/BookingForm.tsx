@@ -7,16 +7,18 @@ import { QRCodeSVG } from 'qrcode.react';
 import { cn } from '../lib/utils';
 
 interface FormData {
+  fullName: string;
   pickup: string;
-  dropoff: string;
+  destination: string;
   passengers: string;
   phone: string;
   carType: string;
 }
 
 interface FormErrors {
+  fullName?: string;
   pickup?: string;
-  dropoff?: string;
+  destination?: string;
   phone?: string;
   carType?: string;
 }
@@ -38,11 +40,12 @@ interface BookingFormProps {
 export default function BookingForm({ initialCarType = '' }: BookingFormProps) {
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [formData, setFormData] = useState<FormData>({
+    fullName: '',
     pickup: '',
-    dropoff: '',
+    destination: '',
     passengers: '1 Passenger',
     phone: '',
-    carType: initialCarType || 'Executive Minivan',
+    carType: initialCarType || '4x4 Land Cruiser',
   });
 
   useEffect(() => {
@@ -53,6 +56,7 @@ export default function BookingForm({ initialCarType = '' }: BookingFormProps) {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null);
   const [availabilityStatus, setAvailabilityStatus] = useState<AvailabilityStatus>('idle');
 
@@ -85,12 +89,16 @@ export default function BookingForm({ initialCarType = '' }: BookingFormProps) {
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
     
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
+    }
+
     if (!formData.pickup.trim()) {
       newErrors.pickup = 'Pickup location is required';
     }
     
-    if (!formData.dropoff.trim()) {
-      newErrors.dropoff = 'Drop-off location is required';
+    if (!formData.destination.trim()) {
+      newErrors.destination = 'Safari destination is required';
     }
     
     const phoneRegex = /^\+?[\d\s-]{10,}$/;
@@ -104,38 +112,33 @@ export default function BookingForm({ initialCarType = '' }: BookingFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (availabilityStatus === 'unavailable') return;
     
     if (validate()) {
-      setIsSubmitting(true);
-      
-      // Simulate hypothetical backend API call to process booking and assign driver
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const mockDetails: BookingDetails = {
-        driverName: 'John Kamau',
-        vehicleModel: 'Toyota Land Cruiser Prado (White)',
-        licensePlate: 'KDJ 456X',
-        estimatedArrival: '15 minutes',
-        journeyDuration: '45 minutes',
-      };
-      
-      setBookingDetails(mockDetails);
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      
-      // Reset form data
-      setFormData({
-        pickup: '',
-        dropoff: '',
-        passengers: '1 Passenger',
-        phone: '',
-        carType: 'Executive Minivan',
-      });
-      setStartDate(new Date());
+      setShowModal(true);
     }
+  };
+
+  const handleConfirm = async () => {
+    setShowModal(false);
+    setIsSubmitting(true);
+    
+    // Simulate hypothetical backend API call to process booking and assign driver
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    const mockDetails: BookingDetails = {
+      driverName: 'John Kamau',
+      vehicleModel: 'Toyota Land Cruiser Prado (White)',
+      licensePlate: 'KDJ 456X',
+      estimatedArrival: '15 minutes',
+      journeyDuration: '45 minutes',
+    };
+    
+    setBookingDetails(mockDetails);
+    setIsSubmitting(false);
+    setIsSubmitted(true);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -240,7 +243,16 @@ export default function BookingForm({ initialCarType = '' }: BookingFormProps) {
                     transition={{ delay: 0.2 }}
                     className="bg-slate-50 rounded-3xl p-6 text-left space-y-4 border border-slate-100 mb-8"
                   >
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Assigned Driver & Vehicle</h4>
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Booking Confirmation</h4>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+                        <Users className="w-6 h-6 text-[#0077B6]" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-400 font-medium">Client Name</p>
+                        <p className="text-slate-900 font-bold">{formData.fullName}</p>
+                      </div>
+                    </div>
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
                         <Users className="w-6 h-6 text-[#FFB703]" />
@@ -283,7 +295,7 @@ export default function BookingForm({ initialCarType = '' }: BookingFormProps) {
                       <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Scan for Booking Details</p>
                       <div className="p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
                         <QRCodeSVG 
-                          value={`Booking Details:\nDriver: ${bookingDetails.driverName}\nVehicle: ${bookingDetails.vehicleModel}\nPlate: ${bookingDetails.licensePlate}\nArrival: ${bookingDetails.estimatedArrival}`}
+                          value={`Booking Details:\nClient: ${formData.fullName}\nDriver: ${bookingDetails.driverName}\nVehicle: ${bookingDetails.vehicleModel}\nPlate: ${bookingDetails.licensePlate}\nArrival: ${bookingDetails.estimatedArrival}`}
                           size={128}
                           level="H"
                           includeMargin={true}
@@ -316,45 +328,68 @@ export default function BookingForm({ initialCarType = '' }: BookingFormProps) {
                   <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
                     <div className="flex justify-between border-b border-slate-200 pb-1">
                       <span className="text-slate-600">Malindi</span>
-                      <span className="font-bold text-slate-900">15,000</span>
+                      <span className="font-bold text-slate-900">20,000</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200 pb-1">
-                      <span className="text-slate-600">Kilifi Town</span>
-                      <span className="font-bold text-slate-900">7,000</span>
+                      <span className="text-slate-600">Kilifi</span>
+                      <span className="font-bold text-slate-900">10,000</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200 pb-1">
                       <span className="text-slate-600">Mtwapa</span>
-                      <span className="font-bold text-slate-900">3,500</span>
+                      <span className="font-bold text-slate-900">4,500</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200 pb-1">
                       <span className="text-slate-600">Shanzu</span>
+                      <span className="font-bold text-slate-900">3,500</span>
+                    </div>
+                    <div className="flex justify-between border-b border-slate-200 pb-1">
+                      <span className="text-slate-600">Bamburi</span>
                       <span className="font-bold text-slate-900">3,000</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200 pb-1">
                       <span className="text-slate-600">Nyali</span>
-                      <span className="font-bold text-slate-900">2,100</span>
+                      <span className="font-bold text-slate-900">2,700</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200 pb-1">
                       <span className="text-slate-600">Mombasa Town</span>
-                      <span className="font-bold text-slate-900">1,500</span>
+                      <span className="font-bold text-slate-900">2,000</span>
+                    </div>
+                    <div className="flex justify-between border-b border-slate-200 pb-1">
+                      <span className="text-slate-600">Likoni</span>
+                      <span className="font-bold text-slate-900">4,000</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200 pb-1">
                       <span className="text-slate-600">Diani</span>
-                      <span className="font-bold text-slate-900">7,000</span>
+                      <span className="font-bold text-slate-900">10,000</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200 pb-1">
                       <span className="text-slate-600">Mariakani</span>
-                      <span className="font-bold text-slate-900">3,500</span>
+                      <span className="font-bold text-slate-900">4,000</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200 pb-1">
-                      <span className="text-slate-600">Kaloleni</span>
-                      <span className="font-bold text-slate-900">3,500</span>
+                      <span className="text-slate-600">Voi</span>
+                      <span className="font-bold text-slate-900">40,000</span>
+                    </div>
+                    <div className="flex justify-between border-b border-slate-200 pb-1">
+                      <span className="text-slate-600">Nairobi</span>
+                      <span className="font-bold text-slate-900">70,000</span>
                     </div>
                   </div>
                 </div>
 
                 <button 
-                  onClick={() => setIsSubmitted(false)}
+                  onClick={() => {
+                    setFormData({
+                      fullName: '',
+                      pickup: '',
+                      destination: '',
+                      passengers: '1 Passenger',
+                      phone: '',
+                      carType: '4x4 Land Cruiser',
+                    });
+                    setStartDate(new Date());
+                    setIsSubmitted(false);
+                  }}
                   className="w-full bg-[#0077B6] text-white py-4 rounded-2xl font-bold hover:opacity-90 transition-all shadow-lg"
                 >
                   Make Another Booking
@@ -362,6 +397,32 @@ export default function BookingForm({ initialCarType = '' }: BookingFormProps) {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                    <Users className="w-4 h-4 text-[#FFB703]" />
+                    Full Name
+                  </label>
+                  <input 
+                    type="text" 
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    placeholder="Enter your full name"
+                    className={cn(
+                      "w-full px-5 py-4 bg-slate-50 border rounded-2xl focus:outline-none focus:ring-2 transition-all",
+                      errors.fullName 
+                        ? "border-rose-500 focus:ring-rose-200" 
+                        : "border-slate-200 focus:ring-[#0077B6]"
+                    )}
+                  />
+                  {errors.fullName && (
+                    <p className="text-rose-500 text-xs font-medium flex items-center gap-1 mt-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {errors.fullName}
+                    </p>
+                  )}
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
@@ -391,25 +452,25 @@ export default function BookingForm({ initialCarType = '' }: BookingFormProps) {
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-rose-500" />
-                      Drop-off Location
+                      Safari Destination
                     </label>
                     <input 
                       type="text" 
-                      name="dropoff"
-                      value={formData.dropoff}
+                      name="destination"
+                      value={formData.destination}
                       onChange={handleChange}
-                      placeholder="Enter destination"
+                      placeholder="Enter safari destination"
                       className={cn(
                         "w-full px-5 py-4 bg-slate-50 border rounded-2xl focus:outline-none focus:ring-2 transition-all",
-                        errors.dropoff 
+                        errors.destination 
                           ? "border-rose-500 focus:ring-rose-200" 
                           : "border-slate-200 focus:ring-[#0077B6]"
                       )}
                     />
-                    {errors.dropoff && (
+                    {errors.destination && (
                       <p className="text-rose-500 text-xs font-medium flex items-center gap-1 mt-1">
                         <AlertCircle className="w-3 h-3" />
-                        {errors.dropoff}
+                        {errors.destination}
                       </p>
                     )}
                   </div>
@@ -476,6 +537,9 @@ export default function BookingForm({ initialCarType = '' }: BookingFormProps) {
                       onChange={handleChange}
                       className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0077B6] transition-all appearance-none"
                     >
+                      <option>Toyota Fielder</option>
+                      <option>4x4 Land Cruiser</option>
+                      <option>Van</option>
                       <option>Executive Minivan</option>
                       <option>Premium Prado</option>
                       <option>Luxury Sedan</option>
@@ -540,7 +604,61 @@ export default function BookingForm({ initialCarType = '' }: BookingFormProps) {
           </motion.div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-[2.5rem] p-8 md:p-10 max-w-lg w-full shadow-2xl overflow-hidden relative"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFB703]/5 rounded-full -mr-16 -mt-16" />
+              
+              <h3 className="text-2xl font-display font-bold text-slate-900 mb-6">Booking Summary</h3>
+              
+              <div className="space-y-4 mb-8">
+                <SummaryItem icon={<Users className="w-4 h-4 text-[#FFB703]" />} label="Full Name" value={formData.fullName} />
+                <SummaryItem icon={<MapPin className="w-4 h-4 text-[#FFB703]" />} label="Pickup" value={formData.pickup} />
+                <SummaryItem icon={<MapPin className="w-4 h-4 text-rose-500" />} label="Destination" value={formData.destination} />
+                <SummaryItem icon={<Car className="w-4 h-4 text-[#FFB703]" />} label="Car Type" value={formData.carType} />
+                <SummaryItem icon={<Calendar className="w-4 h-4 text-[#FFB703]" />} label="Date & Time" value={startDate?.toLocaleString() || 'Not set'} />
+                <SummaryItem icon={<Users className="w-4 h-4 text-[#FFB703]" />} label="Passengers" value={formData.passengers} />
+                <SummaryItem icon={<Hash className="w-4 h-4 text-[#FFB703]" />} label="Phone Number" value={formData.phone} />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 px-6 py-4 rounded-2xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirm}
+                  className="flex-1 px-6 py-4 rounded-2xl font-bold text-slate-900 bg-[#FFB703] hover:opacity-90 transition-all shadow-lg shadow-[#FFB703]/20"
+                >
+                  Confirm
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
+  );
+}
+
+function SummaryItem({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="mt-1">{icon}</div>
+      <div>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{label}</p>
+        <p className="text-slate-900 font-medium">{value}</p>
+      </div>
+    </div>
   );
 }
 
