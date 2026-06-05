@@ -25,16 +25,16 @@ export default function Hero() {
           >
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full mb-6">
               <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              <span className="text-white text-sm font-medium">Rated #1 Taxi Service in the City</span>
+              <span className="text-white text-sm font-medium">Rated #1 Taxi & Airport Transfer in Mombasa County</span>
             </div>
             
             <h1 className="text-5xl md:text-7xl font-display font-bold text-white leading-[1.1] mb-6">
-              Your Premium <span className="text-yellow-400">Travel Partner</span> for Every Journey.
+              Premium <span className="text-yellow-400">Mombasa Taxi</span> & Car Hire Services.
             </h1>
             
             <p className="text-xl text-slate-300 mb-10 max-w-xl leading-relaxed">
-              Experience comfort, reliability, and safety with Dan Travels. 
-              From airport transfers to city tours, we've got you covered 24/7.
+              Experience peak comfort, reliability, and safety with Dan Travels across Mombasa County. 
+              Specializing in 24/7 Moi Airport transfers, SGR Miritini Terminus pickups, and unforgettable coastal safaris.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -91,8 +91,10 @@ export default function Hero() {
             className="w-full h-auto object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.5)]"
             referrerPolicy="no-referrer"
           />
-          {/* License Plate Blur Overlay */}
-          <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 w-32 h-8 bg-white/30 backdrop-blur-md rounded border border-white/20 shadow-sm z-10" />
+          {/* Branded License Plate Cover to hide original yellow plates */}
+          <div className="absolute bottom-[18%] left-1/2 -translate-x-1/2 px-4 py-1.5 bg-slate-950 text-white font-mono text-xs tracking-widest font-bold rounded-md border border-slate-800 shadow-2xl z-10 flex items-center justify-center min-w-[130px] h-9 select-none">
+            <span className="text-yellow-400 mr-2 font-sans">✦</span> DAN TRAVELS
+          </div>
         </motion.div>
       </div>
     </section>

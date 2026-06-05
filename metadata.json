@@ -1,5 +1,5 @@
 {
   "name": "Dan Travels",
-  "description": "Premium taxi and travel services for a comfortable and reliable journey.",
+  "description": "Dan Travels - Premium taxi, airport transfer, car hire, and safari tour services in Mombasa County, Diani, Malindi, Kilifi, and SGR Terminus passenger pick-ups.",
   "requestFramePermissions": ["geolocation"]
 }

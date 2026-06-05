@@ -99,8 +99,10 @@ export default function Fleet({ onSelectCar }: FleetProps) {
                     className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
                     referrerPolicy="no-referrer"
                   />
-                  {/* License Plate Blur Overlay */}
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-24 h-6 bg-white/30 backdrop-blur-md rounded border border-white/20 shadow-sm z-10" />
+                  {/* Branded License Plate Cover to hide original yellow plates */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-950 text-white font-mono text-[10px] tracking-widest font-bold rounded-md border border-slate-800 shadow-2xl z-10 flex items-center justify-center min-w-[110px] h-7 select-none">
+                    <span className="text-yellow-400 mr-1.5 font-sans">✦</span> DAN TRAVELS
+                  </div>
                   
                   <div className="absolute top-4 left-4">
                     <span className="bg-yellow-400 text-slate-900 px-4 py-1 rounded-full text-sm font-bold shadow-lg">
